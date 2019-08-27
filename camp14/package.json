@@ -1,0 +1,22 @@
+{
+  "name": "camp14",
+  "version": "1.0.0",
+  "description": "shopping mall",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx nodemon -e js,html app.js app.js",
+    "dev": "npx nodemon -e js,html app.js app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kadensungbincho",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "morgan": "^1.9.1",
+    "mysql2": "^1.6.5",
+    "nunjucks": "^3.2.0",
+    "sequelize": "^4.42.0"
+  }
+}
