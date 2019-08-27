@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var dotenv = require('dotenv');
 
-dotenv.config();
+dotenv.config(); // Load Config
 
 const sequelize = new Sequelize(process.env.DATABASE,
   process.env.DB_USER, process.env.DB_PASSWORD, {
