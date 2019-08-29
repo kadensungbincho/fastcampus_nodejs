@@ -11,7 +11,34 @@
                 Write: {{ product.dateFormat( product.createdAt )}}
             </div>
 
+            {% if product.thumbnail %}
+                <p>
+                    <img src="/uploads/{{ product.thumbnail }}" style="max-width: 100%" />
+                </p>
+            {% endif %}
+
             {{ product.description }}
+
+            <hr />
+            <ul>
+                {% for memo in product.Memo %}
+                    <li>
+                        {{ memo.content }}  
+                        (
+                            <a href="/admin/products/delete/{{ product.id }}/{{ memo.id }}" 
+                                onclick="return confirm('Want to delete?')">
+                                Delete
+                            </a>
+                        )
+                    </li>
+                {% endfor %}
+            </ul>
+
+            Write a Memo
+            <form action="" method="post">
+                <textarea class="form-control" name="content" required></textarea>
+                <button class="btn btn-primary" style="margin-top: 10px">메모작성</button>
+            </form>
 
         </div>
     </div>

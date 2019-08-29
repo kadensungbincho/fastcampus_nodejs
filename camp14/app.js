@@ -2,6 +2,7 @@ const express = require('express');
 const nunjucks = require('nunjucks');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 const db = require('./models');
 
@@ -31,6 +32,10 @@ nunjucks.configure('template', {
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// uploads path setup
+app.use('/uploads', express.static('uploads'));
 
 app.get('/', function(req, res) {
   res.send('first app kaden cho after nodemon');
@@ -41,5 +46,3 @@ app.use('/admin', admin);
 app.listen(port, function() {
   console.log('Express listening on port', port);
 });
-
-// GET /
