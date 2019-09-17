@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
 const models = require('../models');
+const loginRequired = require('../helpers/loginRequired');
+const paginate = require('express-paginate');
 
 // csrf setting
 const csrf = require('csurf');
@@ -28,21 +29,49 @@ router.get('/', (_, res) => {
   res.send('admin url');
 });
 
-router.get('/products', async (_, res) => {
-  // res.send('this is product page of admin');
-  // 
-  const products = await models.Products.findAll();
-  res.render('admin/products.html', { products });
+router.get('/products', paginate.middleware(3, 50), async (req,res) => {
+
+  try {
+
+      const [ products, totalCount ] = await Promise.all([
+
+          models.Products.findAll({
+              include : [
+                  {
+                      model : models.User ,
+                      as : 'Owner',
+                      attributes : [ 'username' , 'displayname' ]
+                  },
+              ],
+              limit : req.query.limit ,
+              offset : req.offset
+          }),
+
+          models.Products.count()
+      ]);
+
+      const pageCount = Math.ceil( totalCount / req.query.limit );
+  
+      const pages = paginate.getArrayPages(req)( 4 , pageCount, req.query.page);
+
+      res.render( 'admin/products.html' , { products , pages , pageCount });
+
+  } catch(e) {
+
+  }
+
 });
 
-router.get('/products/write', csrfProtection, (req, res) => {
+router.get('/products/write', loginRequired, csrfProtection, (req, res) => {
   res.render('admin/form.html', { csrfToken: req.csrfToken() });
 });
 
-router.post('/products/write', upload.single('thumbnail'), csrfProtection, async (req, res) => {
+router.post('/products/write', loginRequired, upload.single('thumbnail'), csrfProtection, async (req, res) => {
   try {
-    req.body.thumbnail = (req.file) ? req.file.filename : "",
-    await models.Products.create( req.body );
+    req.body.thumbnail = (req.file) ? req.file.filename : "";
+
+    const user = await models.User.findByPk(req.user.id);
+    await user.createProduct(req.body);
     res.redirect('/admin/products');
   } catch(e) {
     console.log(e);
@@ -73,7 +102,7 @@ router.post('/products/detail/:id', async (req, res) => {
   };
 })
 
-router.get('/products/edit/:id', csrfProtection, async (req, res) => {
+router.get('/products/edit/:id', loginRequired, csrfProtection, async (req, res) => {
   try {
     const product = await models.Products.findByPk(req.params.id);
     res.render('admin/form.html', { product, csrfToken: req.csrfToken() });
@@ -83,7 +112,7 @@ router.get('/products/edit/:id', csrfProtection, async (req, res) => {
   
 });
 
-router.post('/products/edit/:id', upload.single('thumbnail'),csrfProtection, async (req, res) => {
+router.post('/products/edit/:id', loginRequired, upload.single('thumbnail'),csrfProtection, async (req, res) => {
   try {
     const product = await models.Products.findByPk(req.params.id);
     if(req.file && product.thumbnail) {
@@ -124,6 +153,10 @@ router.get('/products/delete/:product_id/:memo_id', async(req, res) => {
   } catch(e) {
     console.log(e);
   }
-})
+});
+
+router.post('/products/ajax_summernote', loginRequired, upload.single('thumbnail'), (req,res) => {
+  res.send( '/uploads/' + req.file.filename);
+});
 
 module.exports = router;
