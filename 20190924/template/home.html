@@ -3,23 +3,23 @@
  
 {% block content -%}
 
-<div class="container" id="masonry_container">
-    {% for product in products %}
-    <div class="masonry-grid">
-        <a href="/products/{{ product.id }}">
-            {% if product.thumbnail %}
-                <img src="/uploads/{{ product.thumbnail }}">
-            {% endif %}
-            <p>
-                {{ product.name }}<br />
-                by {{ product.Owner.displayname }} (
-                    {{ product.dateFormat( product.createdAt ) }}
-                )
-            </p>
-        </a>
+    <div class="container" id="masonry_container">
+        {% for product in products %}
+        <div class="masonry-grid">
+            <a href="/products/{{ product.id }}">
+                {% if product.thumbnail %}
+                    <img src="/uploads/{{ product.thumbnail }}">
+                {% endif %}
+                <p>
+                    {{ product.name }}<br />
+                    by {{ product.Owner.displayname }} (
+                        {{ product.dateFormat( product.createdAt ) }}
+                    )
+                </p>
+            </a>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
 
 <style type="text/css">
 .masonry-grid img { max-width: 260px; }

@@ -49,7 +49,7 @@ class App {
         db.sequelize.authenticate()
         .then(() => {
             console.log('Connection has been established successfully.');
-            return db.sequelize.sync();
+            //  return db.sequelize.sync();
             // return db.sequelize.drop();
         })
         .then(() => {
@@ -121,6 +121,8 @@ class App {
             this.app.locals.isLogin = req.isAuthenticated();
 
             this.app.locals.req_path = req.path;
+
+            this.app.locals.req_user = req.user;
 
 
             next();
